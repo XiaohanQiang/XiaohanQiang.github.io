@@ -1,0 +1,139 @@
+---
+title: "NYC Weather Dashboard"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(plotly)
+library(flexdashboard)
+library(p8105.datasets)
+
+weather_df =
+  ny_noaa |>
+  mutate(
+    date = as.Date(date),
+    year = lubridate::year(date),
+    month = lubridate::month(date, label = TRUE),
+    tmax = as.numeric(tmax) / 10,
+    tmin = as.numeric(tmin) / 10
+  ) |>
+  filter(
+    year >= 2010,
+    year <= 2015,
+    !is.na(tmax),
+    !is.na(tmin)
+  )
+
+monthly_weather =
+  weather_df |>
+  group_by(year, month) |>
+  summarize(
+    mean_tmax = mean(tmax),
+    mean_tmin = mean(tmin),
+    .groups = "drop"
+  ) |>
+  mutate(
+    month_date = as.Date(
+      paste(year, as.integer(month), "01", sep = "-")
+    )
+  )
+```
+
+## Column {data-width="550"}
+
+### Monthly Temperature Trends
+
+```{r temperature-trends, echo=FALSE}
+trend_plot =
+  monthly_weather |>
+  ggplot(aes(x = month_date)) +
+  geom_line(
+    aes(y = mean_tmax, color = "Maximum"),
+    linewidth = 0.8
+  ) +
+  geom_line(
+    aes(y = mean_tmin, color = "Minimum"),
+    linewidth = 0.8
+  ) +
+  scale_color_manual(
+    values = c(
+      "Maximum" = "#B45F52",
+      "Minimum" = "#4A8495"
+    )
+  ) +
+  labs(
+    x = "Date",
+    y = "Temperature (°C)",
+    color = "Temperature",
+    title = "Average Monthly Temperatures"
+  ) +
+  theme_minimal()
+
+ggplotly(trend_plot)
+```
+
+### Temperature Distribution by Month
+
+```{r temperature-boxplot, echo=FALSE}
+box_plot =
+  weather_df |>
+  ggplot(aes(
+    x = month,
+    y = tmax,
+    fill = month
+  )) +
+  geom_boxplot(
+    outlier.alpha = 0.2
+  ) +
+  labs(
+    x = "Month",
+    y = "Maximum Temperature (°C)",
+    title = "Monthly Temperature Distribution"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+ggplotly(box_plot)
+```
+
+## Column {data-width="450"}
+
+### Maximum vs. Minimum Temperature
+
+```{r temperature-scatter, echo=FALSE}
+set.seed(8105)
+
+scatter_df =
+  weather_df |>
+  slice_sample(n = min(3000, nrow(weather_df)))
+
+scatter_plot =
+  scatter_df |>
+  ggplot(aes(
+    x = tmin,
+    y = tmax,
+    color = factor(year),
+    text = paste0(
+      "Date: ", date,
+      "<br>Min: ", round(tmin, 1), "°C",
+      "<br>Max: ", round(tmax, 1), "°C"
+    )
+  )) +
+  geom_point(
+    alpha = 0.55,
+    size = 1.4
+  ) +
+  labs(
+    x = "Minimum Temperature (°C)",
+    y = "Maximum Temperature (°C)",
+    color = "Year",
+    title = "Daily Temperature Relationship"
+  ) +
+  theme_minimal()
+
+ggplotly(scatter_plot, tooltip = "text")
+```
