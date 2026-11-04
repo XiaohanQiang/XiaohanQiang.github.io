@@ -1,0 +1,22 @@
+
+name: "xiaohan-website"
+output_dir: "docs"
+navbar:
+  title: "Xiaohan Qiang"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Resume"
+      href: resume.html
+    - text: "Dashboard"
+      href: dashboard.html
+  right:
+    - icon: fa-github
+      href: https://github.com/XiaohanQiang
+    - icon: fa-envelope
+      href: mailto:xq2270@cumc.columbia.edu
+
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate

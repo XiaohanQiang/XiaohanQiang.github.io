@@ -1,0 +1,23 @@
+
+---
+title: "Home"
+---
+
+## Hi, I'm Xiaohan!
+
+Welcome to my personal website.
+
+I am an MS student in Biostatistics at Columbia University, with an academic background in Applied Statistics.
+
+My interests include biostatistics, machine learning, health data science, and biomedical research.
+
+### Academic Interests
+
+- Biostatistics and statistical learning
+- Machine learning for health data
+- Single-cell data integration
+- Applied data science
+
+### Explore
+
+Visit the Resume page to learn about my academic and professional background, or explore my interactive data dashboard.
